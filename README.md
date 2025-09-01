@@ -18,6 +18,9 @@ Este proyecto implementa un servidor web en Java, utilizando únicamente librer�
 - Comunicación asíncrona con servicios REST (métodos GET y POST).
 - Rutas REST dinámicas mediante expresiones lambda.
 - Manejo de parámetros de consulta (query params) en las solicitudes.
+- Soporta reflexión en Java.
+- Permite cargar un POJO y derivar una aplicación Web a partir de él.
+- Explora el classpath y registra automáticamente las clases anotadas como controladores
 
 ---
 
@@ -130,7 +133,9 @@ De esta forma, el servidor puede manejar tanto contenido estático (HTML, CSS, J
 <img width="400" height="240" alt="image" src="https://github.com/user-attachments/assets/fd67dd6f-0c5d-4d1b-aefb-984b0f6c6fce" />
 <img width="400" height="303" alt="image" src="https://github.com/user-attachments/assets/2baa6d44-6ffc-4aaf-8a8a-c3898523e58e" /><br>
 
-<br>**Para servicios cargar POJO's desde la línea de comandos**
+<br>
+
+<br>**Para cargar POJO's desde la línea de comandos**
 
 <img width="450" height="185" alt="image" src="https://github.com/user-attachments/assets/19c4faf2-ec3b-4dd3-a48b-a7e7115141f3" />
 
@@ -145,13 +150,35 @@ HelloController: Es un POJO con anotaciones que define un servicio web. Describe
 
 Cargando HelloController desde la línea de comandos:
 
-<pre>java -cp target/classes com.mycompany.httpserver.MicroSpringBoot com.mycompany.httpserver.HelloController</pre>
+<pre>java -cp target/classes com.mycompany.httpserver.MicroSpringBoot com.mycompany.httpserver.HelloController</pre><br>
+
+<br>**Para procesar automáticamente las anotaciones: @RestController, @GetMapping y @RequesParam**
+
+<img width="720" height="181" alt="image" src="https://github.com/user-attachments/assets/81d1bbb7-a4ce-4ff6-a4d8-0ef858e3bb4c" />
+
+@RestController:
+- Marca una clase como componente web.
+- Indica que la clase contendrá métodos que responden a solicitudes HTTP.
+
+@GetMapping:
+- Marca un método como manejador de solicitudes HTTP GET.
+- Define la URI a la que se responde.
+
+@RequesParam
+- Se usa en los parámetros de un método.
+- En este caso, permite definir un defaultValue si no viene el parámetro.
+
+<img width="370" height="222" alt="image" src="https://github.com/user-attachments/assets/16f4b780-a5bf-4f8d-b459-783498a0d0b6" />
+<img width="400" height="214" alt="image" src="https://github.com/user-attachments/assets/5c330cf8-1cd0-485c-bebc-b75dc3cc649a" />
+
+
 
 ---
 
 
 ## Arquitectura
-<img width="860" height="746" alt="image" src="https://github.com/user-attachments/assets/98565b94-b48e-498c-a8dc-3118c373272b" />
+
+<img width="660" height="746" alt="image" src="https://github.com/user-attachments/assets/98565b94-b48e-498c-a8dc-3118c373272b" />
 
 1. WebServer: 
    
@@ -209,23 +236,37 @@ Cargando HelloController desde la línea de comandos:
    - Soporta tanto respuestas de texto como binarias (HTML e imágenes).
    - Es responsable de formatear y enviar la respuesta completa al cliente siguiendo el protocolo HTTP.
 
+9. MicroSpringBoot
+
+    - Permite registrar componentes web tanto de forma manual (desde consola pasando el nombre de la clase) como automáticamente (escaneando el classpath).
+    - Busca de manera recursiva en el directorio raíz todas las clases que tengan la anotación @RestController.
+    - Mediante reflexión, registra aquellos métodos de esos componentes que estén anotados con @GetMapping.
+    - Soporta la anotación @RequestParam, obteniendo valores de la query string o, en caso de no estar presentes, asignar los valores por defecto definidos en la anotación.
+
+10. HelloController
+
+     - Es un componente web anotado con @RestController.
+     - Expone un endpoint accesible en la ruta /greeting por medio de la anotación @GetMapping.
+     - Por ahora solo maneja solicitudes HTTP GET y recibe un parámetro name con @RequestParam.
 
 ---
 
 ## Diagrama de clases
 
-<img width="1310" height="751" alt="image" src="https://github.com/user-attachments/assets/5c19ddf2-33ab-4171-ae68-878e08f08740" />
+<img width="1745" height="663" alt="image" src="https://github.com/user-attachments/assets/7e0c4f88-9758-4974-a930-9f83d5693d9b" />
 
 
 ### Relaciones entre clases
 - WebServer -> ServerSocket: La clase WebServer utiliza ServerSocket para escuchar conexiones entrantes de clientes en un puerto específico.
 - WebServer -> RequestHandler: Por cada cliente que se conecta, WebServer crea un objeto RequestHandler. RequestHandler depende de WebServer para su creación, pero no forma parte permanente del WebServer.
+- WebServer -> MicroSpringBoot: WebServer delega en MicroSpringBoot la tarea de detectar y registrar automáticamente los componentes web.
 - RequestHandler -> FileHandler: RequestHandler utiliza FileHandler para servir archivos estáticos solicitados por el cliente.
 - RequestHandler -> ApiHandler: RequestHandler utiliza ApiHandler para procesar solicitudes a endpoints de la API.
 - RequestHandler -> Request: RequestHandler crea un Request a partir de la petición y los parámetros definidos.
 - RequestHandler -> Response: RequestHandler inicializa un Response, el cual contiene código de estados, cabecera y cuerpo.
 - RequestHandler -> Router: RequestHandler consulta al Router para saber si existe un Route registrado para el path solicitado.
 - Router -> Route: Router mantiene un mapa de rutas y las asocia a objetos Route, que son funciones lambda.
+- MicroSpringBoot -> HelloController: MicroSpringBoot identifica y carga dinámicamente a HelloController gracias a las anotaciones (@RestController, @GetMapping).
   
 ---
 
