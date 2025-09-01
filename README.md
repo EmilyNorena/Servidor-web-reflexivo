@@ -28,9 +28,16 @@ src
 │   ├───java
 │   │   └───com
 │   │       └───mycompany
+│   │           ├───annotations
+│   │           │       GetMapping.java
+│   │           │       RequestParam.java
+│   │           │       RestController.java
+│   │           │
 │   │           └───httpserver
 │   │                   ApiHandler.java
 │   │                   FileHandler.java
+│   │                   HelloController.java
+│   │                   MicroSpringBoot.java
 │   │                   Request.java
 │   │                   RequestHandler.java
 │   │                   Response.java
@@ -104,12 +111,14 @@ Si buscas un recurso inexistente, verás esta página
 
 ---
 
-## Ejemplo de uso
-Cómo un Desarrollador Web puede usar el Framework
+## Ejemplos de uso
+
+**Para servicios REST**
+
+Este fragmento de código configura un servidor web en Java con soporte para archivos estáticos y servicios REST.
 
 <img width="700" height="121" alt="image" src="https://github.com/user-attachments/assets/4684408a-68ae-4454-8694-1345416826a0" />
-
-Este fragmento de código configura un servidor web en Java con soporte para archivos estáticos y servicios REST. 
+ 
 - Los archivos estáticos se sirven desde la carpeta target/classes/webroot (o desde la ruta definida en staticFilesPath).
 - Se exponen endpoints REST con el método GET a través de la clase Router:
     - /api/helloworld → retorna el texto fijo "hello world!".
@@ -118,10 +127,27 @@ Este fragmento de código configura un servidor web en Java con soporte para arc
 
 De esta forma, el servidor puede manejar tanto contenido estático (HTML, CSS, JS) como peticiones dinámicas mediante endpoints REST.
 
-<img width="493" height="303" alt="image" src="https://github.com/user-attachments/assets/fd67dd6f-0c5d-4d1b-aefb-984b0f6c6fce" />
-<img width="505" height="303" alt="image" src="https://github.com/user-attachments/assets/2baa6d44-6ffc-4aaf-8a8a-c3898523e58e" />
+<img width="400" height="240" alt="image" src="https://github.com/user-attachments/assets/fd67dd6f-0c5d-4d1b-aefb-984b0f6c6fce" />
+<img width="400" height="303" alt="image" src="https://github.com/user-attachments/assets/2baa6d44-6ffc-4aaf-8a8a-c3898523e58e" /><br>
 
+<br>**Para servicios cargar POJO's desde la línea de comandos**
 
+<img width="450" height="185" alt="image" src="https://github.com/user-attachments/assets/19c4faf2-ec3b-4dd3-a48b-a7e7115141f3" />
+
+MicroSpringBoot: Es el punto de entrada. Recibe como argumento(s) el nombre de la clase a cargar en tiempo de ejecución. 
+
+<img width="340" height="175" alt="image" src="https://github.com/user-attachments/assets/c7c9862f-8f89-4fe5-a172-e05134f1729f" />
+
+HelloController: Es un POJO con anotaciones que define un servicio web. Describe qué ruta HTTP publicar y qué respuesta dar.
+
+- @RestController: Marca la clase como un componente web que debe ser cargado por MicroSpringBoot.
+- @GetMapping("/"): Marca el método index() como un endpoint HTTP GET.
+
+Cargando HelloController desde la línea de comandos:
+
+<pre>java -cp target/classes com.mycompany.httpserver.MicroSpringBoot com.mycompany.httpserver.HelloController</pre>
+
+---
 
 
 ## Arquitectura
