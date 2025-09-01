@@ -65,13 +65,12 @@ Para correr el proyecto localmente, debes tener instalado:
 3. Git (https://git-scm.com/downloads). Puedes verificar la versión ejecutando en la terminal: <pre> git --version </pre>
 
 Posterior a esto, es necesario clonar el repositorio de la siguiente manera:
-<pre> https://github.com/EmilyNorena/Microframeworks-WEB.git </pre>
+<pre> https://github.com/EmilyNorena/Servidor-web-reflexivo.git </pre>
 
 Finalmente, sigue estos pasos:
-1. Dirígete a la carpeta que con tiene el archivo pom.xml: <pre>cd httpserver</pre>
-2. Construye el proyecto: <pre>mvn clean package</pre>
+1. Construye el proyecto: <pre>mvn clean package</pre>
    La salida debe ser BUILD SUCCESS.
-4. Ejecuta la aplicación: <pre> java -cp target/classes com.mycompany.httpserver.WebServer </pre>
+2. Ejecuta la aplicación: <pre> java -cp target/classes com.mycompany.httpserver.WebServer </pre>
    La consola debe mostrar el siguiente mensaje: Server started on port 8080.
 
 ---
