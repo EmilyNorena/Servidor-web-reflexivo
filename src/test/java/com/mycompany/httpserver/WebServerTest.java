@@ -173,7 +173,7 @@ public class WebServerTest {
         RequestParam rp = m.getParameters()[0].getAnnotation(RequestParam.class);
 
         assertNotNull(rp, "El parámetro debe tener @RequestParam");
-        assertEquals("name", rp.value(), "El parámetro debe llamarse 'name'");
+        assertEquals("name", rp.value(), "El parámetro debe ser 'name'");
         assertEquals("World", rp.defaultValue(), "El defaultValue debe ser 'World'");
     }
 
