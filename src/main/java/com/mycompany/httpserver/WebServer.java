@@ -11,6 +11,8 @@ public class WebServer {
     private static String staticFilesPath; 
 
     public static void main(String[] args) throws Exception {
+        MicroSpringBoot.classScanner();
+
         Router.get("/api/helloworld", (req, res) -> "hello world!");
         Router.get("/api/hello", (req, res) -> "hello " + req.getValues("name"));
         Router.get("/api/pi", (req, resp) -> String.valueOf(Math.PI));

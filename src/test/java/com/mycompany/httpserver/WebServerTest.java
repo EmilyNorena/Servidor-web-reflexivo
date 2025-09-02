@@ -5,12 +5,15 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import com.mycompany.annotations.GetMapping;
+import com.mycompany.annotations.RequestParam;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import com.mycompany.httpserver.WebServer;
 
 /**
  *
@@ -22,10 +25,13 @@ public class WebServerTest {
     private static final String URL = "http://localhost:8080/";
     private static WebServer server;
     private static Thread serverThread;
+    private static HelloController controller;
 
     @BeforeAll
     public static void setUp() {
         try {
+            controller = new HelloController();
+            MicroSpringBoot.classScanner();
             Router.get("/api/hello", (req, res) -> "hello " + req.getValues("name"));
             Router.get("/api/pi", (req, resp) -> String.valueOf(Math.PI));
             server = new WebServer("target/classes/webroot");
@@ -149,6 +155,44 @@ public class WebServerTest {
     @Test
     public void shouldReturn404ForUnregisteredRoute() throws Exception {
         testEndpointRequest("unknown/route", 404);
+    }
+
+    @Test
+    void testGetMappingAnnotationPresent() throws Exception {
+        Method m = HelloController.class.getDeclaredMethod("greeting", String.class);
+        assertTrue(
+            m.isAnnotationPresent(GetMapping.class),
+            "El método greeting debe tener @GetMapping"
+        );
+        assertEquals("/greeting", m.getAnnotation(GetMapping.class).value());
+    }
+
+    @Test
+    void testRequestParamDefaultValue() throws Exception {
+        Method m = HelloController.class.getDeclaredMethod("greeting", String.class);
+        RequestParam rp = m.getParameters()[0].getAnnotation(RequestParam.class);
+
+        assertNotNull(rp, "El parámetro debe tener @RequestParam");
+        assertEquals("name", rp.value(), "El parámetro debe llamarse 'name'");
+        assertEquals("World", rp.defaultValue(), "El defaultValue debe ser 'World'");
+    }
+
+    @Test
+    void testGreetingWithName() {
+        Request req = new Request("/greeting?name=Emily");
+        Response res = new Response();
+        Route route = Router.find("/greeting");
+        String result = route.handle(req, res);
+        assertEquals("Hola Emily", result);
+    }
+
+    @Test
+    void testGreetingWithoutName_UsesDefault() {
+        Request req = new Request("/greeting");
+        Response res = new Response();
+        Route route = Router.find("/greeting");
+        String result = route.handle(req, res);
+        assertEquals("Hola World", result);
     }
 
     private String getResponseBody(String endpoint) throws IOException {
