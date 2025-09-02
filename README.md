@@ -310,4 +310,12 @@ Cargando HelloController desde la línea de comandos:
 
 18. <pre>shouldReturn404ForUnregisteredRoute </pre> Asegura que cualquier ruta no registrada (como unknown/route) devuelva correctamente un error 404 Not Found.
 
+19. <pre>testGetMappingAnnotationPresent </pre> Comprueba que el método greeting tenga la anotación @GetMapping, correspondiente a una solicitud HTTP GET.
+
+20. <pre> testRequestParamDefaultValue</pre> Verifica que el parámetro tenga la anotación @RequestParam. Adicionalemte, verifica que el parámetro debe ser un String name y que defaultValue sea World.
+
+21. <pre> testGreetingWithName</pre> Simula una petición a /greeting?name=Emily y verifica que el método anotado devuelva "Hola Emily".
+
+22. <pre> testGreetingWithName</pre> Simula una petición a /greeting sin parámetros y comprueba que se use el defaultValue, devolviendo "Hola World".
+
 
